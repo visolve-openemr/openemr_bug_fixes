@@ -36,7 +36,6 @@
 
 $arrived=0;
 $arrived_enc=0;
-
 require_once('../../globals.php');
 require_once($GLOBALS['srcdir'].'/patient.inc');
 require_once($GLOBALS['srcdir'].'/forms.inc');
@@ -136,6 +135,7 @@ function DOBandEncounter()
 			 sqlStatement("UPDATE patient_data SET DOB = ? WHERE " .
 									 "pid = ?", array($patient_dob,$_POST['form_pid']) );
 	 }
+
 	 // Auto-create a new encounter if appropriate.
 	 //
 	 if ($GLOBALS['auto_create_new_encounters'] && $_POST['form_apptstatus'] == '@' && $event_date == date('Y-m-d') && !$_POST['status_before_post'])
@@ -145,9 +145,9 @@ function DOBandEncounter()
 				 $info_msg .= xl("New encounter created with id"); 
 				 $info_msg .= " $encounter";
 				 //ViSolve:-Mapping the Postcalendar appointment and encounter created - in a table 'appointment_encounter'
-				 $ret = sqlStatement("select pc_eid,pc_time from openemr_postcalendar_events order by pc_time desc limit 1");
-				 $dis = sqlFetchArray($ret);
-				 sqlInsert("Insert into appointment_encounter SET eid='".$dis['pc_eid']."' , encounter='$encounter'");
+				 $ret_eid = sqlQuery("select pc_eid,pc_time from openemr_postcalendar_events order by pc_time desc limit 1");
+				 $get_eid = htmlspecialchars($ret_eid['pc_eid'], ENT_NOQUOTES);
+				 sqlInsert("Insert into appointment_encounter SET eid= ? , encounter= ?", array($get_eid,$encounter));
 		 }
 	 }
 	// ViSolve:-Edit Appointment(@) - instead of creating new encounter, it will update already created encounter
@@ -166,8 +166,7 @@ function DOBandEncounter()
 		$tmprow = sqlQuery("SELECT encounter FROM form_encounter WHERE " .
     		"pid = ? AND date = ? " .
     		"ORDER BY encounter DESC LIMIT 1",array($patient_id,"$event_date 00:00:00"));
-  		$encounter =  $_POST['created_encounter'];
-		
+  		$encounter =  $_POST['created_encounter'];	
 		sqlInsert("UPDATE form_encounter SET " .
       			"date = ?, " .
       			"reason = ?, " .
@@ -178,7 +177,6 @@ function DOBandEncounter()
       			"pid = ?, " .
                         "pc_catid = ? where encounter = ?",array($event_date,$visit_reason,$facility,$facility_id,$billing_facility,$visit_provider,$patient_id,$visit_cat,$encounter));
 	}
-
  }
 //================================================================================================================
 
@@ -768,8 +766,8 @@ if ($_POST['form_action'] == "save") {
 //ViSolve:-Save the appointment status (in edit mode) and if the status is "@" then saves the encounter too
 if($row['pc_apptstatus']=='@')
 {
-$enc_val = sqlFetchArray(sqlStatement("select encounter from appointment_encounter where eid='$eid'"));
-$arrived_enc = $enc_val['encounter'];
+$enc_val = sqlQuery("select encounter from appointment_encounter where eid= ?",array($eid));
+$arrived_enc = htmlspecialchars($enc_val['encounter'], ENT_NOQUOTES);
 $arrived = 1;
 }
 else
