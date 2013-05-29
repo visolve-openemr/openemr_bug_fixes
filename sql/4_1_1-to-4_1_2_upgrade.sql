@@ -446,3 +446,12 @@ ALTER TABLE `immunizations`
 ALTER TABLE `documents` ADD COLUMN `path_depth` TINYINT DEFAULT '1' COMMENT 'Depth of path to use in url to find document. Not applicable for CouchDB.';
 #Endif
 
+#IfNotTable appointment_encounter
+CREATE TABLE `appointment_encounter` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `eid` int NOT NULL,
+  `encounter` int not null,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+#EndIf
+

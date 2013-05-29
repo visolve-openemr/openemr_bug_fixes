@@ -5765,3 +5765,16 @@ CREATE TABLE `product_warehouse` (
 ) ENGINE=MyISAM;
 
 -- --------------------------------------------------------
+
+--
+-- Table structure for table `appointment_encounter`
+--
+
+#IfNotTable appointment_encounter
+CREATE TABLE `appointment_encounter` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `eid` int NOT NULL,
+  `encounter` int not null,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+#EndIf
