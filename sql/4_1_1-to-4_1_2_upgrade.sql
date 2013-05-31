@@ -459,7 +459,7 @@ CREATE TABLE `users_secure` (
   `salt_history2` varchar(255),
   PRIMARY KEY (`id`),
   UNIQUE KEY `USERNAME_ID` (`id`,`username`)
-) ENGINE=InnoDb; 
+) ENGINE=InnoDb;
 #EndIf
 
 
@@ -474,3 +474,13 @@ CREATE TABLE `rsa_pairs` (
 #IfMissingColumn patient_access_onsite portal_salt
 ALTER TABLE `patient_access_onsite` ADD COLUMN `portal_salt` VARCHAR(100) NULL;
 #Endif
+
+#IfNotTable appointment_encounter
+CREATE TABLE `appointment_encounter` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `eid` int NOT NULL,
+  `encounter` int not null,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+#EndIf
+
